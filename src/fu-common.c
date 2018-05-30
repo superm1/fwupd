@@ -376,6 +376,7 @@ fu_common_firmware_builder (GBytes *bytes,
 {
 	gint rc = 0;
 	g_autofree gchar *argv_str = NULL;
+	g_autofree gchar *localstatebuilderdir = NULL;
 	g_autofree gchar *localstatedir = NULL;
 	g_autofree gchar *output2_fn = NULL;
 	g_autofree gchar *standard_error = NULL;
@@ -397,7 +398,8 @@ fu_common_firmware_builder (GBytes *bytes,
 		return NULL;
 
 	/* this is shared with the plugins */
-	localstatedir = g_build_filename (LOCALSTATEDIR, "lib", "fwupd", "builder", NULL);
+	localstatedir = fu_common_get_path (FU_PATH_KIND_LOCALSTATEDIR);
+	localstatebuilderdir = g_build_filename (localstatedir, "lib", "fwupd", "builder", NULL);
 
 	/* launch bubblewrap and generate firmware */
 	g_ptr_array_add (argv, g_strdup ("bwrap"));
@@ -406,8 +408,8 @@ fu_common_firmware_builder (GBytes *bytes,
 	fu_common_add_argv (argv, "--dir /tmp");
 	fu_common_add_argv (argv, "--dir /var");
 	fu_common_add_argv (argv, "--bind %s /tmp", tmpdir);
-	if (g_file_test (localstatedir, G_FILE_TEST_EXISTS))
-		fu_common_add_argv (argv, "--ro-bind %s /boot", localstatedir);
+	if (g_file_test (localstatebuilderdir, G_FILE_TEST_EXISTS))
+		fu_common_add_argv (argv, "--ro-bind %s /boot", localstatebuilderdir);
 	fu_common_add_argv (argv, "--dev /dev");
 	fu_common_add_argv (argv, "--symlink usr/lib /lib");
 	fu_common_add_argv (argv, "--symlink usr/lib64 /lib64");
@@ -782,4 +784,45 @@ fu_common_error_array_get_best (GPtrArray *errors)
 	return g_error_new (FWUPD_ERROR,
 			    FWUPD_ERROR_NOT_FOUND,
 			    "No supported devices found");
+}
+
+/**
+ * fu_common_get_path:
+ * @path_kind: A #FuPathKind e.g. %FU_PATH_KIND_DESTDIR
+ *
+ * Gets a fwupd-specific system path. These can be overridden with various
+ * environment variables, for instance %FWUPD_DATADIR.
+ *
+ * Returns: a system path, or %NULL if invalid
+ **/
+gchar *
+fu_common_get_path (FuPathKind path_kind)
+{
+	const gchar *tmp;
+
+	/* /usr/share/fwupd */
+	if (path_kind == FU_PATH_KIND_DESTDIR) {
+		tmp = g_getenv ("FWUPD_DATADIR");
+		if (tmp != NULL)
+			return g_strdup (tmp);
+		tmp = g_getenv ("SNAP");
+		if (tmp != NULL)
+			return g_build_filename (tmp, DATADIR, "fwupd", NULL);
+		return g_build_filename (DATADIR, "fwupd", NULL);
+	}
+
+	/* /var */
+	if (path_kind == FU_PATH_KIND_LOCALSTATEDIR) {
+		tmp = g_getenv ("FWUPD_LOCALSTATEDIR");
+		if (tmp != NULL)
+			return g_strdup (tmp);
+		tmp = g_getenv ("SNAP_USER_DATA");
+		if (tmp != NULL)
+			return g_build_filename (tmp, LOCALSTATEDIR, "fwupd", NULL);
+		return g_build_filename (LOCALSTATEDIR, "fwupd", NULL);
+	}
+
+	/* this shouldn't happen */
+	g_assert_not_reached ();
+	return NULL;
 }

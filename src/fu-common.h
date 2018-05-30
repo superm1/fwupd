@@ -16,6 +16,12 @@ typedef enum {
 	FU_APP_FLAGS_LAST
 } FuAppFlags;
 
+typedef enum {
+	FU_PATH_KIND_DESTDIR,
+	FU_PATH_KIND_LOCALSTATEDIR,
+	FU_PATH_KIND_LAST
+} FuPathKind;
+
 typedef void	(*FuOutputHandler)		(const gchar	*line,
 						 gpointer	 user_data);
 
@@ -25,6 +31,7 @@ gboolean	 fu_common_spawn_sync		(const gchar * const *argv,
 						 GCancellable	*cancellable,
 						 GError		**error);
 
+gchar		*fu_common_get_path		(FuPathKind	 path_kind);
 gboolean	 fu_common_rmtree		(const gchar	*directory,
 						 GError		**error);
 GPtrArray	*fu_common_get_files_recursive	(const gchar	*path,

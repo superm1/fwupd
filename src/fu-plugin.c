@@ -1125,6 +1125,7 @@ fu_plugin_runner_schedule_update (FuPlugin *plugin,
 	gchar tmpname[] = {"XXXXXX.cap"};
 	g_autofree gchar *dirname = NULL;
 	g_autofree gchar *filename = NULL;
+	g_autofree gchar *localstatedir = NULL;
 	g_autoptr(FuDevice) res_tmp = NULL;
 	g_autoptr(FuHistory) history = NULL;
 	g_autoptr(FwupdRelease) release_tmp = fwupd_release_new ();
@@ -1143,7 +1144,8 @@ fu_plugin_runner_schedule_update (FuPlugin *plugin,
 	}
 
 	/* create directory */
-	dirname = g_build_filename (LOCALSTATEDIR, "lib", "fwupd", NULL);
+	localstatedir = fu_common_get_path (FU_PATH_KIND_LOCALSTATEDIR);
+	dirname = g_build_filename (localstatedir, "lib", "fwupd", NULL);
 	file = g_file_new_for_path (dirname);
 	if (!g_file_query_exists (file, NULL)) {
 		if (!g_file_make_directory_with_parents (file, NULL, error))

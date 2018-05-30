@@ -12,6 +12,7 @@
 #include <gio/gio.h>
 #include <glib/gi18n.h>
 
+#include "fu-common.h"
 #include "fu-config.h"
 
 #include "fwupd-common.h"
@@ -454,6 +455,7 @@ fu_config_load_from_file (FuConfig *self, const gchar *config_file,
 gboolean
 fu_config_load (FuConfig *self, GError **error)
 {
+	g_autofree gchar *datadir = NULL;
 	g_autofree gchar *metainfo_path = NULL;
 	g_autofree gchar *config_file = NULL;
 
@@ -473,7 +475,8 @@ fu_config_load (FuConfig *self, GError **error)
 	if (self->os_release == NULL)
 		return FALSE;
 	as_store_add_filter (self->store_remotes, AS_APP_KIND_SOURCE);
-	metainfo_path = g_build_filename (FWUPDDATADIR, "metainfo", NULL);
+	datadir = fu_common_get_path (FU_PATH_KIND_DESTDIR);
+	metainfo_path = g_build_filename (datadir, "metainfo", NULL);
 	if (g_file_test (metainfo_path, G_FILE_TEST_EXISTS)) {
 		if (!as_store_load_path (self->store_remotes,
 					 metainfo_path,

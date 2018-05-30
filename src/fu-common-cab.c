@@ -140,6 +140,7 @@ fu_common_store_from_cab_file (AsStore *store, GCabCabinet *cabinet,
 	g_autoptr(GError) error_local = NULL;
 #if !AS_CHECK_VERSION(0,7,5)
 	g_autofree gchar *cache_fn = NULL;
+	g_autofree gchar *localstatedir = NULL;
 #endif
 
 	/* parse file */
@@ -162,7 +163,8 @@ fu_common_store_from_cab_file (AsStore *store, GCabCabinet *cabinet,
 		return FALSE;
 	}
 #else
-	cache_fn = g_build_filename (LOCALSTATEDIR, "cache", "fwupd",
+	localstatedir = fu_common_get_path (FU_PATH_KIND_LOCALSTATEDIR);
+	cache_fn = g_build_filename (localstatedir, "cache", "fwupd",
 				     gcab_file_get_extract_name (cabfile), NULL);
 	if (!fu_common_mkdir_parent (cache_fn, error))
 		return FALSE;

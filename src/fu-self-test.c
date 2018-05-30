@@ -1213,6 +1213,7 @@ fu_plugin_module_func (void)
 	FwupdRelease *release;
 	gboolean ret;
 	guint cnt = 0;
+	g_autofree gchar *localstatedir = fu_common_get_path (FU_PATH_KIND_LOCALSTATEDIR);
 	g_autofree gchar *mapped_file_fn = NULL;
 	g_autofree gchar *pending_cap = NULL;
 	g_autofree gchar *history_db = NULL;
@@ -1321,7 +1322,7 @@ fu_plugin_module_func (void)
 	g_clear_error (&error);
 
 	/* delete files */
-	history_db = g_build_filename (LOCALSTATEDIR, "lib", "fwupd", "pending.db", NULL);
+	history_db = g_build_filename (localstatedir, "lib", "fwupd", "pending.db", NULL);
 	g_unlink (history_db);
 	g_unlink (pending_cap);
 }
@@ -1443,13 +1444,14 @@ fu_history_func (void)
 	g_autoptr(FuHistory) history = NULL;
 	g_autofree gchar *dirname = NULL;
 	g_autofree gchar *filename = NULL;
+	g_autofree gchar *localstatedir = fu_common_get_path (FU_PATH_KIND_LOCALSTATEDIR);
 
 	/* create */
 	history = fu_history_new ();
 	g_assert (history != NULL);
 
 	/* delete the database */
-	dirname = g_build_filename (LOCALSTATEDIR, "lib", "fwupd", NULL);
+	dirname = g_build_filename (localstatedir, "lib", "fwupd", NULL);
 	if (!g_file_test (dirname, G_FILE_TEST_IS_DIR))
 		return;
 	filename = g_build_filename (dirname, "pending.db", NULL);
