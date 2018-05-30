@@ -263,6 +263,7 @@ conf.set_quoted('LIBEXECDIR', libexecdir)
 conf.set_quoted('DATADIR', datadir)
 conf.set_quoted('LOCALSTATEDIR', localstatedir)
 conf.set_quoted('CONFIGDIR', sysconfdir)
+conf.set_quoted('PLUGINDIR', plugin_dir)
 
 conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 conf.set_quoted('PACKAGE_NAME', meson.project_name())

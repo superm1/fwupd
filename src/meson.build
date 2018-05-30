@@ -148,7 +148,6 @@ fwupdtool = executable(
   ],
   c_args : [
     cargs,
-    '-DPLUGINDIR="' + plugin_dir + '"',
     '-DSYSFSFIRMWAREDIR="/sys/firmware"',
     '-DFU_OFFLINE_DESTDIR=""',
   ],
@@ -223,7 +222,6 @@ executable(
   link_with : fwupd,
   c_args : [
     cargs,
-    '-DPLUGINDIR="' + plugin_dir + '"',
     '-DSYSFSFIRMWAREDIR="/sys/firmware"',
     '-DFU_OFFLINE_DESTDIR=""',
   ],
@@ -296,13 +294,13 @@ if get_option('tests')
       '-DTESTDATADIR="' + testdatadir_src + ':' + testdatadir_dst + '"',
       '-DPLUGINBUILDDIR="' + pluginbuilddir + '"',
       '-DFU_OFFLINE_DESTDIR="/tmp/fwupd-self-test"',
-      '-DPLUGINDIR="' + testdatadir_src + '"',
       '-DSYSFSFIRMWAREDIR="' + testdatadir_src + '"',
     ],
   )
   test('fu-self-test', e, is_parallel:false,
        env: ['FWUPD_DATADIR=' + testdatadir_src,
              'FWUPD_CONFIGDIR=' + testdatadir_src,
+             'FWUPD_PLUGINDIR=' + testdatadir_src,
              'FWUPD_LOCALSTATEDIR=/tmp/fwupd-self-test/var'])
 endif
 

@@ -801,6 +801,15 @@ fu_common_get_path (FuPathKind path_kind)
 	const gchar *tmp;
 
 	switch (path_kind) {
+	/* /usr/lib/<triplet>/fwupd-plugins-3 */
+	case FU_PATH_KIND_PLUGINDIR:
+		tmp = g_getenv ("FWUPD_PLUGINDIR");
+		if (tmp != NULL)
+			return g_strdup (tmp);
+		tmp = g_getenv ("SNAP");
+		if (tmp != NULL)
+			return g_build_filename (tmp, PLUGINDIR, NULL);
+		return g_build_filename (PLUGINDIR, NULL);
 	/* /usr/share/fwupd */
 	case FU_PATH_KIND_DESTDIR:
 		tmp = g_getenv ("FWUPD_DATADIR");
