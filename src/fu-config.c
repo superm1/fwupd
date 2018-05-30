@@ -42,7 +42,7 @@ fu_config_get_config_paths (void)
 	GPtrArray *paths = g_ptr_array_new_with_free_func (g_free);
 	const gchar *remotes_dir;
 	const gchar *system_prefixlibdir = "/usr/lib/fwupd";
-	g_autofree gchar *sysconfdir = NULL;
+	g_autofree gchar *configdir = NULL;
 
 	/* only set by the self test program */
 	remotes_dir = g_getenv ("FU_SELF_TEST_REMOTES_DIR");
@@ -52,9 +52,9 @@ fu_config_get_config_paths (void)
 	}
 
 	/* use sysconfig, and then fall back to /etc */
-	sysconfdir = g_build_filename (FWUPDCONFIGDIR, NULL);
-	if (g_file_test (sysconfdir, G_FILE_TEST_EXISTS))
-		g_ptr_array_add (paths, g_steal_pointer (&sysconfdir));
+	configdir = fu_common_get_path (FU_PATH_KIND_CONFIGDIR);
+	if (g_file_test (configdir, G_FILE_TEST_EXISTS))
+		g_ptr_array_add (paths, g_steal_pointer (&configdir));
 
 	/* add in system-wide locations */
 	if (g_file_test (system_prefixlibdir, G_FILE_TEST_EXISTS))
@@ -456,13 +456,15 @@ gboolean
 fu_config_load (FuConfig *self, GError **error)
 {
 	g_autofree gchar *datadir = NULL;
+	g_autofree gchar *configdir = NULL;
 	g_autofree gchar *metainfo_path = NULL;
 	g_autofree gchar *config_file = NULL;
 
 	g_return_val_if_fail (FU_IS_CONFIG (self), FALSE);
 
 	/* load the main daemon config file */
-	config_file = g_build_filename (FWUPDCONFIGDIR, "daemon.conf", NULL);
+	configdir = fu_common_get_path (FU_PATH_KIND_CONFIGDIR);
+	config_file = g_build_filename (configdir, "daemon.conf", NULL);
 	if (g_file_test (config_file, G_FILE_TEST_EXISTS)) {
 		if (!fu_config_load_from_file (self, config_file, error))
 			return FALSE;

@@ -140,7 +140,7 @@ fu_keyring_get_release_trust_flags (AsRelease *release,
 	}
 
 	/* check we were installed correctly */
-	pki_dir = g_build_filename (SYSCONFDIR, "pki", "fwupd", NULL);
+	pki_dir = g_build_filename (CONFIGDIR, "pki", "fwupd", NULL);
 	if (!g_file_test (pki_dir, G_FILE_TEST_EXISTS)) {
 		g_set_error (error,
 			     FWUPD_ERROR,

@@ -19,6 +19,7 @@ typedef enum {
 typedef enum {
 	FU_PATH_KIND_DESTDIR,
 	FU_PATH_KIND_LOCALSTATEDIR,
+	FU_PATH_KIND_CONFIGDIR,
 	FU_PATH_KIND_LAST
 } FuPathKind;
 

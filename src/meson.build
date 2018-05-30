@@ -52,7 +52,6 @@ libfwupdprivate = static_library(
   c_args : [
     cargs,
     '-DSYSFSFIRMWAREDIR="/sys/firmware"',
-    '-DFWUPDCONFIGDIR="' + join_paths(default_sysconfdir, 'fwupd') + '"',
     '-DFU_OFFLINE_DESTDIR=""',
   ],
 )
@@ -151,8 +150,6 @@ fwupdtool = executable(
     cargs,
     '-DPLUGINDIR="' + plugin_dir + '"',
     '-DSYSFSFIRMWAREDIR="/sys/firmware"',
-    '-DSYSCONFDIR="' + default_sysconfdir + '"',
-    '-DFWUPDCONFIGDIR="' + join_paths(default_sysconfdir, 'fwupd') + '"',
     '-DFU_OFFLINE_DESTDIR=""',
   ],
   install : true,
@@ -228,8 +225,6 @@ executable(
     cargs,
     '-DPLUGINDIR="' + plugin_dir + '"',
     '-DSYSFSFIRMWAREDIR="/sys/firmware"',
-    '-DSYSCONFDIR="' + default_sysconfdir + '"',
-    '-DFWUPDCONFIGDIR="' + join_paths(default_sysconfdir, 'fwupd') + '"',
     '-DFU_OFFLINE_DESTDIR=""',
   ],
   install : true,
@@ -303,12 +298,11 @@ if get_option('tests')
       '-DFU_OFFLINE_DESTDIR="/tmp/fwupd-self-test"',
       '-DPLUGINDIR="' + testdatadir_src + '"',
       '-DSYSFSFIRMWAREDIR="' + testdatadir_src + '"',
-      '-DSYSCONFDIR="' + testdatadir_src + '"',
-      '-DFWUPDCONFIGDIR="' + testdatadir_src + '"',
     ],
   )
   test('fu-self-test', e, is_parallel:false,
        env: ['FWUPD_DATADIR=' + testdatadir_src,
+             'FWUPD_CONFIGDIR=' + testdatadir_src,
              'FWUPD_LOCALSTATEDIR=/tmp/fwupd-self-test/var'])
 endif
 

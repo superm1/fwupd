@@ -800,8 +800,9 @@ fu_common_get_path (FuPathKind path_kind)
 {
 	const gchar *tmp;
 
+	switch (path_kind) {
 	/* /usr/share/fwupd */
-	if (path_kind == FU_PATH_KIND_DESTDIR) {
+	case FU_PATH_KIND_DESTDIR:
 		tmp = g_getenv ("FWUPD_DATADIR");
 		if (tmp != NULL)
 			return g_strdup (tmp);
@@ -809,10 +810,8 @@ fu_common_get_path (FuPathKind path_kind)
 		if (tmp != NULL)
 			return g_build_filename (tmp, DATADIR, "fwupd", NULL);
 		return g_build_filename (DATADIR, "fwupd", NULL);
-	}
-
 	/* /var */
-	if (path_kind == FU_PATH_KIND_LOCALSTATEDIR) {
+	case FU_PATH_KIND_LOCALSTATEDIR:
 		tmp = g_getenv ("FWUPD_LOCALSTATEDIR");
 		if (tmp != NULL)
 			return g_strdup (tmp);
@@ -820,9 +819,19 @@ fu_common_get_path (FuPathKind path_kind)
 		if (tmp != NULL)
 			return g_build_filename (tmp, LOCALSTATEDIR, "fwupd", NULL);
 		return g_build_filename (LOCALSTATEDIR, "fwupd", NULL);
+	/* /etc */
+	case FU_PATH_KIND_CONFIGDIR:
+		tmp = g_getenv ("FWUPD_CONFIGDIR");
+		if (tmp != NULL)
+			return g_strdup (tmp);
+		tmp = g_getenv ("SNAP_USER_DATA");
+		if (tmp != NULL)
+			return g_build_filename (tmp, CONFIGDIR, "fwupd", NULL);
+		return g_build_filename (CONFIGDIR, "fwupd", NULL);
+	/* this shouldn't happen */
+	default:
+		g_assert_not_reached ();
 	}
 
-	/* this shouldn't happen */
-	g_assert_not_reached ();
 	return NULL;
 }
