@@ -13,6 +13,7 @@ env:
   - OS=debian-i386
   - OS=ubuntu-x86_64
   - OS=centos
+  - OS=snap
 
 install:
   - ./contrib/ci/generate_docker.py
