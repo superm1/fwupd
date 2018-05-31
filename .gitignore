@@ -2,7 +2,6 @@
 /dist
 /.vscode
 *.snap
-/snap
 /parts
 /prime
 /stage
