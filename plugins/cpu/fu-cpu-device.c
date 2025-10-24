@@ -438,6 +438,45 @@ fu_cpu_device_add_security_attrs_smap(FuCpuDevice *self, FuSecurityAttrs *attrs)
 	fwupd_security_attr_add_flag(attr, FWUPD_SECURITY_ATTR_FLAG_SUCCESS);
 }
 
+static void
+fu_cpu_device_add_security_attrs_amd_sb7055(FuCpuDevice *self, FuSecurityAttrs *attrs)
+{
+	gint exit_status = 0xff;
+	g_autofree gchar *toolfn = NULL;
+	g_autofree gchar *dir = NULL;
+	g_autofree gchar *cmd = NULL;
+	g_autoptr(FwupdSecurityAttr) attr = NULL;
+	g_autoptr(GError) error_local = NULL;
+
+	/* only AMD CPUs are affected */
+	if (fu_cpu_get_vendor() != FU_CPU_VENDOR_AMD)
+		return;
+
+	/* create attr */
+	attr =
+	    fu_device_security_attr_new(FU_DEVICE(self), FWUPD_SECURITY_ATTR_ID_AMD_RDRAND_ERRATUM);
+	fwupd_security_attr_add_flag(attr, FWUPD_SECURITY_ATTR_FLAG_RUNTIME_ISSUE);
+	fwupd_security_attr_set_result_success(attr, FWUPD_SECURITY_ATTR_RESULT_VALID);
+	fu_security_attrs_append(attrs, attr);
+
+	/* run the test application with 100000 iterations */
+	dir = fu_path_from_kind(FU_PATH_KIND_LIBEXECDIR_PKG);
+	toolfn = g_build_filename(dir, "fwupd-detect-amd-sb7055", NULL);
+	cmd = g_strdup_printf("%s 100000", toolfn);
+	if (!g_spawn_command_line_sync(cmd, NULL, NULL, &exit_status, &error_local)) {
+		g_warning("failed to test AMD SB-7055: %s", error_local->message);
+		return;
+	}
+	if (!g_spawn_check_wait_status(exit_status, &error_local)) {
+		g_debug("AMD SB-7055 test failed, vulnerability present: %s", error_local->message);
+		fwupd_security_attr_set_result(attr, FWUPD_SECURITY_ATTR_RESULT_NOT_VALID);
+		return;
+	}
+
+	/* success */
+	fwupd_security_attr_add_flag(attr, FWUPD_SECURITY_ATTR_FLAG_SUCCESS);
+}
+
 #ifdef HAVE_UTSNAME_H
 static void
 fu_cpu_device_add_x86_64_security_attrs(FuDevice *device, FuSecurityAttrs *attrs)
@@ -450,6 +489,7 @@ fu_cpu_device_add_x86_64_security_attrs(FuDevice *device, FuSecurityAttrs *attrs
 	fu_cpu_device_add_security_attrs_cet_enabled(self, attrs);
 	fu_cpu_device_add_security_attrs_cet_active(self, attrs);
 	fu_cpu_device_add_security_attrs_smap(self, attrs);
+	fu_cpu_device_add_security_attrs_amd_sb7055(self, attrs);
 }
 #endif
 

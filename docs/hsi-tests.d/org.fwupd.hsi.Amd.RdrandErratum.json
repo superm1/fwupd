@@ -1,0 +1,30 @@
+{
+  "id": "org.fwupd.hsi.Amd.RdrandErratum",
+  "name": "AMD RDRAND/RDSEED Erratum",
+  "description": [
+    "Some AMD processors are affected by erratum where RDRAND and RDSEED instructions may not properly return random values.",
+    "This issue is documented in AMD Security Bulletin SB-7055 and can affect the security of cryptographic operations that rely on these hardware random number generators."
+  ],
+  "more-information": [
+    "The vulnerability can be detected by running concurrent threads that exercise the RDRAND and RDSEED instructions.",
+    "Systems that fail this test should update their firmware to the latest version provided by the manufacturer."
+  ],
+  "failure-impact": [
+    "Processors with this erratum may generate predictable random values, which could compromise cryptographic operations and security features that depend on hardware random number generation."
+  ],
+  "failure-results": {
+    "not-valid": "RDRAND/RDSEED erratum detected"
+  },
+  "success-results": {
+    "valid": "RDRAND/RDSEED working correctly"
+  },
+  "hsi-level": 2,
+  "resolution": "Contact your OEM for a firmware update that addresses AMD Security Bulletin SB-7055.",
+  "references": {
+    "https://www.amd.com/en/resources/product-security/bulletin/amd-sb-7055.html": "AMD Security Bulletin SB-7055"
+  },
+  "requires": [
+    "CPUID\\VID_AuthenticAMD"
+  ],
+  "fwupd-version": "2.0.9"
+}

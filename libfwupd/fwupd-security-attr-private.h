@@ -404,6 +404,14 @@ G_BEGIN_DECLS
  * Since: 2.0.8
  **/
 #define FWUPD_SECURITY_ATTR_ID_UEFI_DB "org.fwupd.hsi.Uefi.Db"
+/**
+ * FWUPD_SECURITY_ATTR_ID_AMD_RDRAND_ERRATUM:
+ *
+ * Host Security ID attribute for AMD RDRAND/RDSEED erratum (AMD SB-7055)
+ *
+ * Since: 2.0.9
+ **/
+#define FWUPD_SECURITY_ATTR_ID_AMD_RDRAND_ERRATUM "org.fwupd.hsi.Amd.RdrandErratum"
 
 FwupdSecurityAttr *
 fwupd_security_attr_copy(FwupdSecurityAttr *self) G_GNUC_NON_NULL(1);
