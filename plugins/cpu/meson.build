@@ -59,3 +59,31 @@ if build_fwupdcethelper
     install_dir: join_paths(libexecdir, 'fwupd')
   )
 endif
+
+# AMD SB-7055 helper
+if host_cpu == 'x86_64'
+  libfwupdamdsb7055helper = static_library('fwupdamdsb7055helper',
+    sources: [
+      'fu-cpu-helper-amd-sb7055-common.S',
+    ],
+    include_directories: [
+      root_incdir,
+    ],
+    install: false,
+  )
+
+  executable(
+    'fwupd-detect-amd-sb7055',
+    sources: [
+      'fu-cpu-helper-amd-sb7055.c',
+    ],
+    include_directories: [
+      root_incdir,
+    ],
+    link_with: [
+      libfwupdamdsb7055helper,
+    ],
+    install: true,
+    install_dir: join_paths(libexecdir, 'fwupd')
+  )
+endif
